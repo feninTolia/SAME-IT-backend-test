@@ -31,7 +31,8 @@ export class UsersController {
   @ApiResponse({ status: 200, type: User })
   @Patch('/:id')
   update(@Param('id') id: number, @Body() dto: UpdateUserDto) {
-    return this.usersService.updateUser(dto, id);
+    const parsedId = parseInt(`${id}`);
+    return this.usersService.updateUser(dto, parsedId);
   }
 
   @ApiOperation({ summary: 'Retrieval of all users' })
@@ -53,6 +54,7 @@ export class UsersController {
   @HttpCode(204)
   @Delete(':id')
   async deleteRow(@Param('id') id: number): Promise<void> {
-    await this.usersService.deleteUser(id);
+    const parsedId = parseInt(`${id}`);
+    await this.usersService.deleteUser(parsedId);
   }
 }

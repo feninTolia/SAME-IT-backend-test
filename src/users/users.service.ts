@@ -60,26 +60,45 @@ export class UsersService {
   }
 
   async updateUser(dto: UpdateUserDto, id: number) {
-    const user = await this.userRepository.findByPk(id);
-    if (!user) return;
+    try {
+      if (!Number.isInteger(id))
+        throw new HttpException(
+          'ID must contain only numbers',
+          HttpStatus.BAD_REQUEST
+        );
 
-    const [res, updatedUser] = await this.userRepository.update(
-      { username: dto.username, email: dto.email, role: dto.role },
-      { where: { id }, returning: true }
-    );
+      const user = await this.userRepository.findByPk(id);
 
-    const profile = await this.profilesService.updateProfile(
-      { state: dto.state, firstName: dto.firstName, lastName: dto.lastName },
-      user.profileId
-    );
+      if (!user)
+        throw new HttpException('User is not found', HttpStatus.BAD_REQUEST);
 
-    return { ...updatedUser, profile };
+      const [res, updatedUser] = await this.userRepository.update(
+        { username: dto.username, email: dto.email, role: dto.role },
+        { where: { id }, returning: true }
+      );
+
+      const profile = await this.profilesService.updateProfile(
+        { state: dto.state, firstName: dto.firstName, lastName: dto.lastName },
+        user.profileId
+      );
+
+      return { ...updatedUser, profile };
+    } catch (e) {
+      if (e.errors) return e.errors.at(0).message;
+      return e;
+    }
   }
 
   async deleteUser(id: number) {
+    if (!Number.isInteger(id))
+      throw new HttpException(
+        'ID must contain only numbers',
+        HttpStatus.BAD_REQUEST
+      );
+
     const user = await this.userRepository.findByPk(id);
     if (!user) return;
     await this.profilesService.deleteProfile(user.profileId);
-    await this.userRepository.destroy({ where: { id } });
+    await this.userRepository.destroy({ where: { id: id } });
   }
 }
