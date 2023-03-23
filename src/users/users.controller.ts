@@ -9,7 +9,6 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Profile } from 'src/profiles/profiles.model';
 import { CreateUserDto } from './dto/create-user.dto';
 import { GetAllByRoleDto } from './dto/get-all-by-role.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
